@@ -2,7 +2,7 @@
 <html lang="si">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>කාවින්ද්‍යාගේ පවුල් දෝෂ පීඩන විශ්ලේෂණය - Interactive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10,534 +10,449 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
+/* ── FOUNDATION & TOKENS ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg-page:    #060b14;
-  --bg-card:    #0d1726;
-  --bg-card2:   #101e30;
-  --bg-surface: #162034;
-  --border:     rgba(255,255,255,0.07);
-  --border-md:  rgba(255,255,255,0.12);
-  --text-1:     #eef2ff;
-  --text-2:     #8a9bbf;
-  --text-3:     #4a5a78;
+  --bg-page:    #050911;
+  --bg-card:    rgba(13, 23, 38, 0.6);
+  --bg-card2:   rgba(16, 30, 48, 0.7);
+  --bg-surface: rgba(22, 32, 52, 0.9);
+  --border:     rgba(255, 255, 255, 0.08);
+  --border-md:  rgba(255, 255, 255, 0.15);
+  --border-glow:rgba(56, 189, 248, 0.3);
+  --text-1:     #f8fafc;
+  --text-2:     #94a3b8;
+  --text-3:     #64748b;
   --col-red:    #f87171;
   --col-orange: #fb923c;
   --col-amber:  #fbbf24;
   --col-green:  #4ade80;
   --col-blue:   #60a5fa;
   --col-sky:    #38bdf8;
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 18px;
-  --r-xl: 24px;
-  --font-si: 'Noto Sans Sinhala', 'Segoe UI', sans-serif;
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --font-si: 'Noto Sans Sinhala', system-ui, -apple-system, sans-serif;
   --font-d:  'DM Serif Display', Georgia, serif;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html { scroll-behavior: smooth; }
 body {
   background: var(--bg-page);
   background-image:
-    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(56,189,248,0.07) 0%, transparent 65%),
-    radial-gradient(ellipse 50% 40% at 85% 85%, rgba(74,222,128,0.04) 0%, transparent 55%);
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56,189,248,0.08) 0%, transparent 60%),
+    radial-gradient(circle 600px at 85% 85%, rgba(74,222,128,0.03) 0%, transparent 70%);
   color: var(--text-1);
   font-family: var(--font-si);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.01em;
 }
 
+/* ── LAYOUT ── */
 .page-wrap {
-  max-width: 820px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 28px 16px 64px;
+  padding: 32px 20px 80px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  animation: fadeUp .6s var(--ease) both;
+  gap: 24px;
+  animation: fadeUp 0.8s var(--ease-out) both;
 }
 
 @keyframes fadeUp {
-  from { opacity:0; transform:translateY(18px); }
-  to   { opacity:1; transform:translateY(0); }
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ── HEADER ── */
 .hdr {
   text-align: center;
-  padding: 36px 16px 28px;
+  padding: 40px 16px 24px;
   position: relative;
-}
-.hdr::before {
-  content:'';
-  position:absolute; inset:0;
-  background: radial-gradient(ellipse 70% 55% at 50% 0%, rgba(56,189,248,0.1) 0%, transparent 68%);
-  pointer-events:none;
 }
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: .11em;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--col-sky);
   background: rgba(56,189,248,0.1);
-  border: 0.5px solid rgba(56,189,248,0.22);
+  border: 1px solid rgba(56,189,248,0.2);
   border-radius: 100px;
-  padding: 4px 14px;
-  margin-bottom: 14px;
+  padding: 6px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(56,189,248,0.1);
 }
 .live-dot {
-  width:6px; height:6px;
-  border-radius:50%;
+  width: 6px; height: 6px;
+  border-radius: 50%;
   background: var(--col-sky);
-  animation: blink 2s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--col-sky);
+  animation: blink 2.5s ease-in-out infinite;
 }
-@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+@keyframes blink { 
+  0%, 100% { opacity: 1; transform: scale(1); } 
+  50% { opacity: 0.3; transform: scale(0.8); } 
+}
 .hdr-title {
   font-family: var(--font-d);
-  font-size: clamp(20px, 5vw, 32px);
+  font-size: clamp(24px, 6vw, 38px);
   font-weight: 400;
-  line-height: 1.3;
+  line-height: 1.25;
   color: var(--text-1);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  letter-spacing: 0.02em;
 }
 .hdr-sub {
-  font-size: 12.5px;
+  font-size: 14px;
   color: var(--text-2);
-  line-height: 1.7;
-  max-width: 480px;
+  line-height: 1.6;
+  max-width: 520px;
   margin: 0 auto;
 }
 
-/* ── CARD ── */
+/* ── GLASS CARDS ── */
 .card {
   background: var(--bg-card);
-  border: 0.5px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
   border-radius: var(--r-lg);
   overflow: hidden;
-  transition: border-color .2s;
+  transition: all 0.3s var(--ease-out);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
-.card:hover { border-color: var(--border-md); }
-.card-body { padding: 20px; }
+.card:hover { border-color: var(--border-md); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.card-body { padding: 24px; }
+@media(max-width: 560px) { .card-body { padding: 20px 16px; } }
+
 .section-label {
-  font-size: 10.5px;
-  font-weight: 500;
-  letter-spacing: .09em;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-3);
+  color: var(--text-2);
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 .section-label::after {
-  content:''; flex:1;
-  height: 0.5px;
-  background: var(--border);
+  content: ''; flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border) 0%, transparent 100%);
 }
-.section-label i { font-size: 12px; color: var(--col-sky); }
+.section-label i { font-size: 14px; color: var(--col-sky); }
 
-/* ── METRIC GRID ── */
+/* ── BENTO METRIC GRID ── */
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 12px;
+  gap: 16px;
 }
-@media(min-width:560px){ .metric-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+@media(min-width: 640px) { .metric-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } }
 
 .m-tile {
   background: var(--bg-card2);
-  border: 0.5px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
   border-radius: var(--r-md);
-  padding: 15px 14px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  transition: border-color .2s, background .2s;
-  animation: fadeUp .5s var(--ease) both;
+  gap: 10px;
+  transition: all 0.3s var(--ease-out);
+  animation: fadeUp 0.6s var(--ease-out) both;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-.m-tile:hover { border-color: var(--border-md); background: var(--bg-surface); }
-.m-tile:nth-child(1){animation-delay:.04s}
-.m-tile:nth-child(2){animation-delay:.08s}
-.m-tile:nth-child(3){animation-delay:.12s}
-.m-tile:nth-child(4){animation-delay:.16s}
+.m-tile:hover { 
+  border-color: var(--border-md); 
+  background: var(--bg-surface); 
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.m-tile:nth-child(1) { animation-delay: 0.1s; }
+.m-tile:nth-child(2) { animation-delay: 0.2s; }
+.m-tile:nth-child(3) { animation-delay: 0.3s; }
+.m-tile:nth-child(4) { animation-delay: 0.4s; }
 
 .m-icon {
-  width:30px; height:30px;
+  width: 36px; height: 36px;
   border-radius: var(--r-sm);
-  display:flex; align-items:center; justify-content:center;
-  font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
 }
 .m-val {
   font-family: var(--font-d);
-  font-size: 21px;
+  font-size: 26px;
   color: var(--text-1);
   line-height: 1;
 }
-.m-name { font-size: 11px; color: var(--text-2); line-height: 1.5; }
+.m-name { font-size: 12px; font-weight: 500; color: var(--text-2); }
 .badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 10px;
-  font-weight: 500;
-  padding: 3px 9px;
-  border-radius: 100px;
-  border: 0.5px solid;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em;
+  padding: 4px 10px; border-radius: 100px; border: 1px solid;
   width: fit-content;
 }
 
-/* ── FILTER BAR ── */
-.filter-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+/* ── FILTER CONTROLS ── */
+.filter-bar-wrapper {
+  display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;
 }
-.filter-label {
-  font-size: 11px;
-  color: var(--text-3);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-}
-.filter-label i { font-size: 11px; }
-.filter-btns {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.fbtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-si);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-2);
-  background: var(--bg-card2);
-  border: 0.5px solid var(--border);
-  border-radius: 100px;
-  padding: 7px 15px;
-  cursor: pointer;
-  transition: all .2s var(--ease);
-  white-space: nowrap;
-  -webkit-tap-highlight-color: transparent;
-}
-.fbtn i { font-size: 11px; }
-.fbtn:hover {
-  border-color: var(--border-md);
-  color: var(--text-1);
-  background: var(--bg-surface);
-}
-.fbtn.active {
-  background: rgba(56,189,248,0.13);
-  border-color: rgba(56,189,248,0.35);
-  color: var(--col-sky);
-}
-.fbtn.active i { color: var(--col-sky); }
-
-/* ── CHART AREA ── */
-.chart-section { }
-.chart-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
+@media(min-width: 768px) {
+  .filter-bar-wrapper { flex-direction: row; align-items: center; justify-content: space-between; }
 }
 .chart-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
+  display: flex; flex-wrap: wrap; gap: 12px 16px;
 }
 .leg-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: var(--text-2);
+  display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); font-weight: 500;
 }
-.leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.chart-wrap {
-  position: relative;
-  width: 100%;
-  height: 280px;
-}
-@media(min-width:560px){ .chart-wrap { height: 320px; } }
+.leg-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
-.key-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10.5px;
-  color: var(--col-amber);
-  background: rgba(251,191,36,0.1);
-  border: 0.5px solid rgba(251,191,36,0.25);
-  border-radius: 100px;
-  padding: 3px 10px;
+.filter-btns { display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.filter-btns::-webkit-scrollbar { display: none; }
+.fbtn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-si); font-size: 13px; font-weight: 500;
+  color: var(--text-2); background: var(--bg-card2);
+  border: 1px solid var(--border); border-radius: 100px;
+  padding: 10px 20px; /* Improved Touch Target */
+  cursor: pointer; transition: all 0.2s var(--ease-out);
+  white-space: nowrap; -webkit-tap-highlight-color: transparent;
 }
-.key-badge i { font-size: 9px; }
+.fbtn:hover, .fbtn:focus-visible {
+  border-color: var(--text-2); color: var(--text-1); background: var(--bg-surface);
+  outline: none;
+}
+.fbtn.active {
+  background: rgba(56,189,248,0.15); border-color: rgba(56,189,248,0.4);
+  color: var(--col-sky); box-shadow: 0 0 12px rgba(56,189,248,0.1);
+}
 
-/* ── PHASE BAND ── */
+/* ── CHART AREA ── */
+.chart-wrap { position: relative; width: 100%; height: 300px; }
+@media(min-width: 640px) { .chart-wrap { height: 360px; } }
+
+/* ── PHASE BAND (Mobile Fixed) ── */
 .phase-band {
   display: flex;
   border-radius: var(--r-md);
-  overflow: hidden;
-  border: 0.5px solid var(--border);
-  margin-top: 14px;
+  overflow-x: auto; /* Allow scrolling on mobile instead of hiding */
+  border: 1px solid var(--border);
+  margin-top: 24px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
 }
-@media(max-width:420px){ .phase-band { display:none; } }
+.phase-band::-webkit-scrollbar { display: none; }
 .p-seg {
-  flex: 1;
-  padding: 9px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  font-size: 9.5px;
-  font-weight: 500;
-  text-align: center;
-  border-right: 0.5px solid var(--border);
-  cursor: default;
-  transition: filter .2s;
+  flex: 1; min-width: 90px; /* Ensure they don't crush on mobile */
+  padding: 12px 8px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 600; text-align: center;
+  border-right: 1px solid var(--border);
+  cursor: default; transition: filter 0.2s;
+  scroll-snap-align: start;
 }
-.p-seg:last-child { border-right:none; }
-.p-seg:hover { filter: brightness(1.12); }
-.p-pip { width:6px; height:6px; border-radius:50%; }
-.p-year { font-size: 9px; color: var(--text-3); }
+.p-seg:last-child { border-right: none; }
+.p-seg:hover { filter: brightness(1.2); }
+.p-pip { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+.p-year { font-size: 10px; color: var(--text-2); font-weight: 400; }
 
-/* ── TIMELINE ── */
-.timeline { display:flex; flex-direction:column; }
+/* ── INTERACTIVE TIMELINE ── */
+.timeline { display: flex; flex-direction: column; padding: 8px 0; }
 .tl-item {
-  display: flex;
-  gap: 13px;
-  padding: 13px 0;
-  border-bottom: 0.5px solid var(--border);
-  animation: fadeUp .4s var(--ease) both;
+  display: flex; gap: 16px; padding: 20px 16px;
+  border-radius: var(--r-md);
+  border-bottom: 1px solid transparent;
+  animation: fadeUp 0.5s var(--ease-out) both;
+  transition: all 0.3s var(--ease-out);
+  position: relative;
 }
-.tl-item:last-child { border-bottom:none; padding-bottom:0; }
+.tl-item::after {
+  content: ''; position: absolute; bottom: 0; left: 60px; right: 16px;
+  height: 1px; background: var(--border); transition: opacity 0.3s;
+}
+.tl-item:last-child::after { display: none; }
+.tl-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateX(6px); /* Micro-interaction guidance */
+}
+.tl-item:hover::after { opacity: 0; }
+
 .tl-left {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  width: 30px;
-  gap: 3px;
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0; width: 36px; gap: 8px;
 }
 .tl-icon {
-  width:30px; height:30px;
-  border-radius:50%;
-  border: 0.5px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  font-size: 12px;
-  background: var(--bg-surface);
-  flex-shrink:0;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; background: var(--bg-surface);
+  flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-.tl-line {
-  flex:1; width:1px;
-  min-height:10px;
-  background: var(--border);
-}
-.tl-content { flex:1; min-width:0; }
-.tl-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 4px;
-}
-.tl-date {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-1);
-  line-height: 1.4;
-}
-.tl-desc {
-  font-size: 11.5px;
-  color: var(--text-2);
-  line-height: 1.6;
-}
+.tl-line { flex: 1; width: 2px; min-height: 20px; background: var(--border); border-radius: 2px; }
+.tl-content { flex: 1; min-width: 0; padding-top: 4px; }
+.tl-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.tl-date { font-size: 15px; font-weight: 600; color: var(--text-1); line-height: 1.4; }
+.tl-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; }
 
 /* ── FOOTER ── */
 .footer {
-  text-align: center;
-  font-size: 11px;
-  color: var(--text-3);
-  padding-top: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  text-align: center; font-size: 12px; color: var(--text-3);
+  padding-top: 16px; display: flex; align-items: center; justify-content: center; gap: 10px;
 }
-.footer i { font-size: 10px; }
+.footer i { font-size: 12px; }
 </style>
 </head>
 <body>
 
 <div class="page-wrap">
 
-  <!-- HEADER -->
-  <div class="hdr">
-    <div class="eyebrow">
-      <span class="live-dot"></span>
-      සජීවී ආධ්‍යාත්මික විශ්ලේෂණය
+  <header class="hdr">
+    <div class="eyebrow" aria-label="Live Status">
+      <span class="live-dot"></span> සජීවී ආධ්‍යාත්මික විශ්ලේෂණය
     </div>
     <h1 class="hdr-title">කාවින්ද්‍යාගේ පවුල් දෝෂ<br>පීඩන කාලරේඛාව</h1>
     <p class="hdr-sub">වෛදික, KP සහ කුණ්ඩලිනී ශක්ති විද්‍යාවට අනුව සජීවී දත්ත ගණනය කිරීම්</p>
-  </div>
+  </header>
 
-  <!-- METRICS -->
-  <div class="metric-grid">
+  <section class="metric-grid" aria-label="Key Metrics">
     <div class="m-tile">
-      <div class="m-icon" style="background:rgba(248,113,113,0.13);">
+      <div class="m-icon" style="background:rgba(248,113,113,0.15);">
         <i class="fa-solid fa-circle-exclamation" style="color:#f87171;"></i>
       </div>
       <div class="m-val">7/10</div>
       <div class="m-name">වර්තමාන පීඩනය</div>
-      <span class="badge" style="background:rgba(248,113,113,0.1);color:#f87171;border-color:rgba(248,113,113,0.22);">
+      <span class="badge" style="background:rgba(248,113,113,0.1);color:#f87171;border-color:rgba(248,113,113,0.25);">
         <i class="fa-solid fa-fire fa-xs"></i>දැඩි
       </span>
     </div>
     <div class="m-tile">
-      <div class="m-icon" style="background:rgba(251,191,36,0.13);">
+      <div class="m-icon" style="background:rgba(251,191,36,0.15);">
         <i class="fa-solid fa-bolt" style="color:#fbbf24;"></i>
       </div>
       <div class="m-val">10/10</div>
       <div class="m-name">ඔක් 2026 – උපරිම</div>
-      <span class="badge" style="background:rgba(251,191,36,0.1);color:#fbbf24;border-color:rgba(251,191,36,0.22);">
+      <span class="badge" style="background:rgba(251,191,36,0.1);color:#fbbf24;border-color:rgba(251,191,36,0.25);">
         <i class="fa-solid fa-sun fa-xs"></i>Solar Return
       </span>
     </div>
     <div class="m-tile">
-      <div class="m-icon" style="background:rgba(74,222,128,0.13);">
+      <div class="m-icon" style="background:rgba(74,222,128,0.15);">
         <i class="fa-solid fa-wand-magic-sparkles" style="color:#4ade80;"></i>
       </div>
       <div class="m-val">ජූනි 03</div>
       <div class="m-name">2027 – හැරවුම</div>
-      <span class="badge" style="background:rgba(74,222,128,0.1);color:#4ade80;border-color:rgba(74,222,128,0.22);">
+      <span class="badge" style="background:rgba(74,222,128,0.1);color:#4ade80;border-color:rgba(74,222,128,0.25);">
         <i class="fa-solid fa-arrow-trend-down fa-xs"></i>වෙන්වීම
       </span>
     </div>
     <div class="m-tile">
-      <div class="m-icon" style="background:rgba(96,165,250,0.13);">
+      <div class="m-icon" style="background:rgba(96,165,250,0.15);">
         <i class="fa-solid fa-star" style="color:#60a5fa;"></i>
       </div>
       <div class="m-val">1/10</div>
       <div class="m-name">2028 – සම්පූර්ණ සුවය</div>
-      <span class="badge" style="background:rgba(96,165,250,0.1);color:#60a5fa;border-color:rgba(96,165,250,0.22);">
+      <span class="badge" style="background:rgba(96,165,250,0.1);color:#60a5fa;border-color:rgba(96,165,250,0.25);">
         <i class="fa-solid fa-dove fa-xs"></i>නිදහස
       </span>
     </div>
-  </div>
+  </section>
 
-  <!-- CHART CARD -->
-  <div class="card">
+  <main class="card">
     <div class="card-body">
+      <h2 class="section-label">
+        <i class="fa-solid fa-chart-line"></i> දෝෂ පීඩන ප්‍රස්තාරය
+      </h2>
 
-      <div class="section-label">
-        <i class="fa-solid fa-chart-line"></i>
-        දෝෂ පීඩන ප්‍රස්තාරය
-      </div>
-
-      <!-- Filter bar -->
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
-        <div class="chart-legend">
-          <div class="leg-item"><div class="leg-dot" style="background:#f87171;"></div>දැඩි</div>
-          <div class="leg-item"><div class="leg-dot" style="background:#fbbf24;"></div>උපරිම</div>
-          <div class="leg-item"><div class="leg-dot" style="background:#4ade80;"></div>සුවය</div>
-          <div class="leg-item"><div class="leg-dot" style="background:#60a5fa;"></div>නිදහස</div>
+      <div class="filter-bar-wrapper">
+        <div class="chart-legend" aria-hidden="true">
+          <div class="leg-item"><div class="leg-dot" style="background:#f87171;box-shadow:0 0 6px #f87171;"></div>දැඩි</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#fbbf24;box-shadow:0 0 6px #fbbf24;"></div>උපරිම</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#4ade80;box-shadow:0 0 6px #4ade80;"></div>සුවය</div>
+          <div class="leg-item"><div class="leg-dot" style="background:#60a5fa;box-shadow:0 0 6px #60a5fa;"></div>නිදහස</div>
           <div class="leg-item">
-            <div class="leg-dot" style="background:#fbbf24;border:1.5px solid #0d1726;box-shadow:0 0 0 1px #fbbf24;"></div>
+            <div class="leg-dot" style="background:#fbbf24;border:2px solid var(--bg-card);box-shadow:0 0 0 1px #fbbf24;"></div>
             <span style="color:#fbbf24;">ජ්‍යෝතිෂ ලක්ෂ්‍ය</span>
           </div>
         </div>
-        <span class="key-badge"><i class="fa-solid fa-circle-dot"></i>ජ්‍යෝතිෂ ලක්ෂ්‍ය</span>
-      </div>
 
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-        <div class="filter-label"><i class="fa-solid fa-sliders" style="color:var(--col-sky);"></i> දර්ශනය:</div>
-        <div class="filter-btns">
-          <button class="fbtn" id="btn-day" onclick="updateChart('day')">
-            <i class="fa-regular fa-calendar-day"></i>දෛනික
+        <div class="filter-btns" role="group" aria-label="Chart Time Range">
+          <button class="fbtn" id="btn-day" onclick="updateChart('day')" aria-pressed="false">
+            <i class="fa-regular fa-calendar-day"></i> දෛනික
           </button>
-          <button class="fbtn" id="btn-month" onclick="updateChart('month')">
-            <i class="fa-regular fa-calendar"></i>මාසික
+          <button class="fbtn" id="btn-month" onclick="updateChart('month')" aria-pressed="false">
+            <i class="fa-regular fa-calendar"></i> මාසික
           </button>
-          <button class="fbtn active" id="btn-3month" onclick="updateChart('3month')">
-            <i class="fa-regular fa-calendar-days"></i>මාස 3
+          <button class="fbtn active" id="btn-3month" onclick="updateChart('3month')" aria-pressed="true">
+            <i class="fa-regular fa-calendar-days"></i> මාස 3
           </button>
         </div>
       </div>
 
-      <div class="chart-wrap">
-        <canvas id="doshaChart"
-          role="img"
-          aria-label="Interactive line chart showing Kavindya's dosha pressure from June 2026 to March 2028. Peaks at 10 in October 2026, drops sharply to 3 on June 3 2027, reaching 1 by March 2028."
-        >Dosha pressure: 7 at Jun 2026, peaks 10 at Oct 2026, drops to 3 at Jun 2027, reaches 1 by Mar 2028.</canvas>
+      <div class="chart-wrap" aria-label="Interactive line chart showing Kavindya's dosha pressure from June 2026 to March 2028.">
+        <canvas id="doshaChart" role="img">
+          Dosha pressure: 7 at Jun 2026, peaks 10 at Oct 2026, drops to 3 at Jun 2027, reaches 1 by Mar 2028.
+        </canvas>
       </div>
 
-      <!-- Phase band -->
-      <div class="phase-band">
-        <div class="p-seg" style="background:rgba(248,113,113,0.07);color:#f87171;">
+      <div class="phase-band" aria-hidden="true">
+        <div class="p-seg" style="background:rgba(248,113,113,0.08);color:#f87171;">
           <div class="p-pip" style="background:#f87171;"></div>
-          <span>පීඩනය</span>
-          <span class="p-year">2026</span>
+          <span>පීඩනය</span><span class="p-year">2026</span>
         </div>
-        <div class="p-seg" style="background:rgba(251,191,36,0.07);color:#fbbf24;">
+        <div class="p-seg" style="background:rgba(251,191,36,0.08);color:#fbbf24;">
           <div class="p-pip" style="background:#fbbf24;"></div>
-          <span>උපරිම</span>
-          <span class="p-year">ඔක් 2026</span>
+          <span>උපරිම</span><span class="p-year">ඔක් 2026</span>
         </div>
-        <div class="p-seg" style="background:rgba(251,146,60,0.07);color:#fb923c;">
+        <div class="p-seg" style="background:rgba(251,146,60,0.08);color:#fb923c;">
           <div class="p-pip" style="background:#fb923c;"></div>
-          <span>ස්ථිරය</span>
-          <span class="p-year">2027 Q1</span>
+          <span>ස්ථිරය</span><span class="p-year">2027 Q1</span>
         </div>
-        <div class="p-seg" style="background:rgba(74,222,128,0.07);color:#4ade80;">
+        <div class="p-seg" style="background:rgba(74,222,128,0.08);color:#4ade80;">
           <div class="p-pip" style="background:#4ade80;"></div>
-          <span>හැරවුම</span>
-          <span class="p-year">ජූනි 2027</span>
+          <span>හැරවුම</span><span class="p-year">ජූනි 2027</span>
         </div>
-        <div class="p-seg" style="background:rgba(96,165,250,0.07);color:#60a5fa;">
+        <div class="p-seg" style="background:rgba(96,165,250,0.08);color:#60a5fa;">
           <div class="p-pip" style="background:#60a5fa;"></div>
-          <span>සුවය</span>
-          <span class="p-year">2028</span>
+          <span>සුවය</span><span class="p-year">2028</span>
         </div>
       </div>
-
     </div>
-  </div>
+  </main>
 
-  <!-- TIMELINE CARD -->
-  <div class="card">
+  <section class="card">
     <div class="card-body">
-      <div class="section-label">
-        <i class="fa-solid fa-timeline"></i>
-        සවිස්තරාත්මක කාලරේඛාව
-      </div>
-      <div class="timeline" id="timeline"></div>
+      <h2 class="section-label">
+        <i class="fa-solid fa-timeline"></i> සවිස්තරාත්මක කාලරේඛාව
+      </h2>
+      <div class="timeline" id="timeline" role="list"></div>
     </div>
-  </div>
+  </section>
 
-  <div class="footer">
+  <footer class="footer">
     <i class="fa-solid fa-om" style="color:var(--col-sky);"></i>
-    ආධ්‍යාත්මික විශ්ලේෂණය · ජ්‍යෝතිෂ්‍ය කාලරේඛාව 2026–2028
+    <span>ආධ්‍යාත්මික විශ්ලේෂණය · ජ්‍යෝතිෂ්‍ය කාලරේඛාව 2026–2028</span>
     <i class="fa-solid fa-om" style="color:var(--col-sky);"></i>
-  </div>
+  </footer>
 
 </div>
 
 <script>
 /* ═══════════════════════════════════════════════
-   ALL ORIGINAL DATA & LOGIC — UNTOUCHED
+   ALL ORIGINAL DATA & LOGIC — STRICTLY UNTOUCHED
 ═══════════════════════════════════════════════ */
 const keyMilestones = [
   { date: new Date(2026, 5, 7),  val: 7.0,  desc: "වර්තමාන තත්ත්වය: දැඩි පීඩනයක් පවතී" },
@@ -616,7 +531,7 @@ function getFilteredData(mode) {
 }
 
 /* ═══════════════════════════════════════════════
-   IMPROVED CHART RENDERING
+   CHART RENDERING (Visually Enhanced)
 ═══════════════════════════════════════════════ */
 const canvasEl = document.getElementById('doshaChart');
 const ctx = canvasEl.getContext('2d');
@@ -637,12 +552,17 @@ function renderChart(dataArr) {
 
   if (doshaChart) { doshaChart.destroy(); }
 
-  const w = canvasEl.parentElement.offsetWidth || 380;
+  const w = canvasEl.parentElement.offsetWidth || 400;
   const grad = ctx.createLinearGradient(0, 0, w, 0);
   grad.addColorStop(0,    '#ef4444');
   grad.addColorStop(0.45, '#f97316');
   grad.addColorStop(0.55, '#22c55e');
   grad.addColorStop(1,    '#3b82f6');
+
+  // Add subtle gradient fill under line
+  const fillGrad = ctx.createLinearGradient(0, 0, 0, 400);
+  fillGrad.addColorStop(0, 'rgba(56,189,248,0.15)');
+  fillGrad.addColorStop(1, 'rgba(56,189,248,0.0)');
 
   doshaChart = new Chart(ctx, {
     type: 'line',
@@ -652,33 +572,34 @@ function renderChart(dataArr) {
         label: 'දෝෂ පීඩනයේ ප්‍රබලතාවය (0–10)',
         data: dataPoints,
         borderColor: grad,
-        backgroundColor: 'rgba(56,189,248,0.04)',
-        borderWidth: 2.5,
+        backgroundColor: fillGrad,
+        borderWidth: 3,
         pointBackgroundColor: dataArr.map(d => d.isKey ? '#fbbf24' : getPointColor(d.val)),
         pointBorderColor: '#0d1726',
-        pointBorderWidth: 1.5,
+        pointBorderWidth: 2,
         pointRadius: dataArr.map(d => d.isKey ? 6 : (dataArr.length > 100 ? 1.5 : 4)),
         pointHoverRadius: 8,
-        tension: 0.1,
+        tension: 0.3, /* Smoother line curves */
         fill: true
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      animation: { duration: 600, easing: 'easeOutQuart' },
+      animation: { duration: 800, easing: 'easeOutQuart' },
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: '#0a1220',
+          backgroundColor: 'rgba(10, 18, 32, 0.95)',
           titleColor: '#38bdf8',
-          bodyColor: '#c8d4ec',
-          borderColor: 'rgba(56,189,248,0.2)',
+          bodyColor: '#e2e8f0',
+          borderColor: 'rgba(56,189,248,0.3)',
           borderWidth: 1,
-          padding: 13,
-          titleFont: { size: 12, weight:'500', family:"'Noto Sans Sinhala',sans-serif" },
-          bodyFont:  { size: 12, family:"'Noto Sans Sinhala',sans-serif" },
+          padding: 16,
+          cornerRadius: 12,
+          titleFont: { size: 13, weight:'600', family:"'Noto Sans Sinhala',sans-serif" },
+          bodyFont:  { size: 13, family:"'Noto Sans Sinhala',sans-serif" },
           callbacks: {
             title: c => c[0].label,
             label: c => '  පීඩන මට්ටම: ' + c.parsed.y.toFixed(2) + '/10',
@@ -688,32 +609,32 @@ function renderChart(dataArr) {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+          grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
           border: { display: false },
           ticks: {
-            color: '#4a5a78',
-            font: { size: 9.5, family:"'Noto Sans Sinhala',sans-serif" },
+            color: '#64748b',
+            font: { size: 11, family:"'Noto Sans Sinhala',sans-serif" },
             maxRotation: 45,
             minRotation: 30,
             autoSkip: true,
-            maxTicksLimit: 12
+            maxTicksLimit: 10
           }
         },
         y: {
           min: 0, max: 10,
-          grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false },
+          grid: { color: 'rgba(255,255,255,0.08)', drawBorder: false },
           border: { display: false },
           ticks: {
-            color: '#4a5a78',
-            font: { size: 11 },
+            color: '#64748b',
+            font: { size: 12 },
             stepSize: 2,
             callback: v => v + '/10'
           },
           title: {
             display: true,
             text: 'පීඩන මට්ටම (0–10)',
-            color: '#4a5a78',
-            font: { size: 11, family:"'Noto Sans Sinhala',sans-serif" }
+            color: '#64748b',
+            font: { size: 12, weight: 500, family:"'Noto Sans Sinhala',sans-serif" }
           }
         }
       }
@@ -722,8 +643,13 @@ function renderChart(dataArr) {
 }
 
 function updateChart(mode) {
-  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-  document.getElementById('btn-' + mode).classList.add('active');
+  document.querySelectorAll('.fbtn').forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('aria-pressed', 'false');
+  });
+  const activeBtn = document.getElementById('btn-' + mode);
+  activeBtn.classList.add('active');
+  activeBtn.setAttribute('aria-pressed', 'true');
   renderChart(getFilteredData(mode));
 }
 
@@ -743,11 +669,11 @@ const tlIcons = [
 const tlColors = ['#f87171','#fb923c','#f87171','#fbbf24','#fb923c','#fb923c','#4ade80','#4ade80','#60a5fa','#60a5fa'];
 
 function getLv(v) {
-  if (v >= 9)  return { label:v+'/10', bg:'rgba(248,113,113,0.1)',  col:'#f87171', bc:'rgba(248,113,113,0.22)' };
-  if (v >= 7)  return { label:v+'/10', bg:'rgba(251,146,60,0.1)',   col:'#fb923c', bc:'rgba(251,146,60,0.22)' };
-  if (v >= 4)  return { label:v+'/10', bg:'rgba(251,191,36,0.1)',   col:'#fbbf24', bc:'rgba(251,191,36,0.22)' };
-  if (v >= 1.5)return { label:v+'/10', bg:'rgba(74,222,128,0.1)',   col:'#4ade80', bc:'rgba(74,222,128,0.22)' };
-  return              { label:v+'/10', bg:'rgba(96,165,250,0.1)',   col:'#60a5fa', bc:'rgba(96,165,250,0.22)' };
+  if (v >= 9)  return { label:v+'/10', bg:'rgba(248,113,113,0.1)',  col:'#f87171', bc:'rgba(248,113,113,0.3)' };
+  if (v >= 7)  return { label:v+'/10', bg:'rgba(251,146,60,0.1)',   col:'#fb923c', bc:'rgba(251,146,60,0.3)' };
+  if (v >= 4)  return { label:v+'/10', bg:'rgba(251,191,36,0.1)',   col:'#fbbf24', bc:'rgba(251,191,36,0.3)' };
+  if (v >= 1.5)return { label:v+'/10', bg:'rgba(74,222,128,0.1)',   col:'#4ade80', bc:'rgba(74,222,128,0.3)' };
+  return              { label:v+'/10', bg:'rgba(96,165,250,0.1)',   col:'#60a5fa', bc:'rgba(96,165,250,0.3)' };
 }
 
 const tlEl = document.getElementById('timeline');
@@ -757,11 +683,12 @@ keyMilestones.forEach((m, i) => {
   const dateStr = formatDateSi(m.date);
   const div = document.createElement('div');
   div.className = 'tl-item';
-  div.style.animationDelay = (i * 0.04) + 's';
+  div.setAttribute('role', 'listitem');
+  div.style.animationDelay = (i * 0.08) + 's';
   div.innerHTML = `
     <div class="tl-left">
-      <div class="tl-icon" style="border-color:${tlColors[i]}22;">
-        <i class="${tlIcons[i]}" style="color:${tlColors[i]};font-size:11px;"></i>
+      <div class="tl-icon" style="border-color:${tlColors[i]}40; box-shadow: 0 0 12px ${tlColors[i]}20;">
+        <i class="${tlIcons[i]}" style="color:${tlColors[i]};font-size:14px;"></i>
       </div>
       ${!isLast ? '<div class="tl-line"></div>' : ''}
     </div>
